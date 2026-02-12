@@ -1,11 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+<meta charset="UTF-8">
+<title>Cecchino</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
+    <canvas id="canvas">
+        <canvas id="grattacielo"></canvas>
+    </canvas>
+<script>
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    var grattacielo=document.getElementById("grattacielo");
+    var ctx2=grattacielo.getContext("2d");
+    ctx.fillStyle = "cyan";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx2.fillStyle="black";
+    ctx2.fillRect(0, 150, grattacielo.width, grattacielo.height);
+</script>
+</script>
+
 </body>
 </html>

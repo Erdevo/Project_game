@@ -2,23 +2,63 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Cecchino</title>
-<link rel="stylesheet" href="style.css">
+<title>porcaccio</title>
 </head>
 <body>
-    <canvas id="canvas">
-        <canvas id="grattacielo"></canvas>
-    </canvas>
+
+<canvas id="canvas" width="1000" height="1000"></canvas>
+
 <script>
-    var canvas = document.getElementById("canvas");
-    var ctx = canvas.getContext("2d");
-    var grattacielo=document.getElementById("grattacielo");
-    var ctx2=grattacielo.getContext("2d");
-    ctx.fillStyle = "cyan";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx2.fillStyle="black";
-    ctx2.fillRect(0, 150, grattacielo.width, grattacielo.height);
-</script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let x = 500;
+let y = 500;
+let size = 100;
+
+let keys = {};
+
+document.addEventListener("keydown", function(aura) {
+  keys[aura.key] = true;
+});
+
+document.addEventListener("keyup", function(aura) {
+  keys[aura.key] = false;
+});
+function napoli() {
+
+  if (keys["ArrowRight"]) x += 5;
+  if (keys["ArrowLeft"]) x -= 5;
+  if (keys["ArrowUp"]) y -= 5;
+  if (keys["ArrowDown"]) y += 5;
+
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  
+  ctx.fillStyle = "black";
+  ctx.fillRect(x, y, 100, 100);
+
+  requestAnimationFrame(napoli);
+}
+function limiti() {
+    if (x < 0) 
+        x = 0;
+
+    
+    if (y < 0) 
+        y = 0;
+
+    
+    if (x > canvas.width - size) 
+        x = canvas.width - size;
+
+    
+    if (y > canvas.height - size) 
+        y = canvas.height - size;
+}
+limiti();
+napoli();
 </script>
 
 </body>

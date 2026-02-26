@@ -53,8 +53,8 @@ function limiti() {               // Cosi non esce dal canvas
 }
 
 
-const hitler = new Image();
-hitler.src = "napoli.png";
+const immagine = new Image();
+immagine.src = "napoli.png";
 
 function napoli() {
 
@@ -69,16 +69,17 @@ function napoli() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Disegno immagine
-ctx.drawImage(hitler, x, y, size, size);
+ctx.drawImage(immagine, x, y, size, size);
 
 
-  
-  for (let i = 0; i < proiettili.length; i++) {
+  // Per ogni proiettile che si spara, 
+  // si muoveeee il proiettile verso l’alto di tanti pixel quanti sono nella sua proprietà speed
+  for (let i = 0; i < proiettili.length; i++) { 
     proiettili[i].y -= proiettili[i].speed;
 
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "black";
     ctx.fillRect(
-      proiettili[i].x,      //Per ogni proiettile che hai sparato,()si muovee verso l’alto di tanti pixel quanti sono nella sua proprietà speed
+      proiettili[i].x,      // Misure proiettile 
       proiettili[i].y,
       proiettili[i].width,
       proiettili[i].height

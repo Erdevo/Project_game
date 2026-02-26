@@ -5,59 +5,89 @@
 <title>porcaccio</title>
 </head>
 <body>
+<link rel="stylesheet" href="style.css">
 
-<canvas id="canvas" width="1000" height="1000"></canvas>
+<canvas id="canvas" width="1150" height="550">
+<div class="fortezza"></div>
+</canvas>
 
 <script>
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-let x = 500;
-let y = 500;
-let size = 100;
+let x = 100;
+let y = 100;
+let size = 80; // Misura immagine
 
 let keys = {};
+let proiettili = [];
+
 
 document.addEventListener("keydown", function(aura) {
   keys[aura.key] = true;
+
+  
+  if (aura.key === " ") {
+    // Aggiungiamo un nuovo proiettile nell'array
+    proiettili.push({
+      // x del cubo + metà della sua grandezza
+      x: x + size / 2, //proiettile parte del centro (dio *)
+      y: y,
+      width: 10,
+      height: 20,
+      speed: 5
+    });
+  }
 });
 
+// KEY UP
 document.addEventListener("keyup", function(aura) {
   keys[aura.key] = false;
 });
+
+function limiti() {               // Cosi non esce dal canvas
+  if (x < 0) x = 0;
+  if (y < 0) y = 0;
+  if (x > canvas.width - size) x = canvas.width - size;
+  if (y > canvas.height - size) y = canvas.height - size;
+}
+
+
+const hitler = new Image();
+hitler.src = "napoli.png";
+
 function napoli() {
 
+  // Movimenti del cubo
   if (keys["ArrowRight"]) x += 5;
   if (keys["ArrowLeft"]) x -= 5;
   if (keys["ArrowUp"]) y -= 5;
   if (keys["ArrowDown"]) y += 5;
 
-  
+  limiti();
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // Disegno immagine
+ctx.drawImage(hitler, x, y, size, size);
+
+
   
-  ctx.fillStyle = "black";
-  ctx.fillRect(x, y, 100, 100);
+  for (let i = 0; i < proiettili.length; i++) {
+    proiettili[i].y -= proiettili[i].speed;
+
+    ctx.fillStyle = "red";
+    ctx.fillRect(
+      proiettili[i].x,      //Per ogni proiettile che hai sparato,()si muovee verso l’alto di tanti pixel quanti sono nella sua proprietà speed
+      proiettili[i].y,
+      proiettili[i].width,
+      proiettili[i].height
+    );
+  }
 
   requestAnimationFrame(napoli);
 }
-function limiti() {
-    if (x < 0) 
-        x = 0;
 
-    
-    if (y < 0) 
-        y = 0;
-
-    
-    if (x > canvas.width - size) 
-        x = canvas.width - size;
-
-    
-    if (y > canvas.height - size) 
-        y = canvas.height - size;
-}
-limiti();
 napoli();
 </script>
 

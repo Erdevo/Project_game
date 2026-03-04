@@ -2,14 +2,22 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>porcaccio</title>
+<title>Difendi la torre di Cerrano</title>
 </head>
 <body>
 <link rel="stylesheet" href="style.css">
 
-<canvas id="canvas" width="1150" height="550">
+<canvas id="canvas" width="950" height="550">
 <div class="fortezza"></div>
 </canvas>
+
+<h4>Scegli il tuo peronaggio</h4>
+<select id="sceltaPersonaggio">
+  <option value="napoli.png">Pocoyo</option>
+  <option value="mario.png">Mario</option>
+  <option value="ronaldo.png">Ronaldo</option>
+  <option value="azzurra.png">Azzurra</option>
+</select>
 
 <script>
 const canvas = document.getElementById("canvas");
@@ -17,10 +25,12 @@ const ctx = canvas.getContext("2d");
 
 let x = 100;
 let y = 100;
-let size = 80; // Misura immagine
-
+let size = 100; // Misura immagine
 let keys = {};
 let proiettili = [];
+let nemici = []; // Array nemici
+let punteggio = 0;
+let gameOver = false;
 
 
 document.addEventListener("keydown", function(aura) {
@@ -40,7 +50,7 @@ document.addEventListener("keydown", function(aura) {
   }
 });
 
-// KEY UP
+
 document.addEventListener("keyup", function(aura) {
   keys[aura.key] = false;
 });
@@ -53,10 +63,42 @@ function limiti() {               // Cosi non esce dal canvas
 }
 
 
+
+function creaNemico() {
+  nemici.push({
+    x: Math.random() * (canvas.width - 60),
+    y: -100, // parte da fuori lo schermo
+    width: 60,
+    height: 60,   
+    speed: 1 + Math.random() * 2
+  });
+}
+
+// Ogni secondo crea un nemico
+setInterval(creaNemico, 1000);
+
+
+const audio = new Audio("");
+audio.pause()
+audio.currentTime = 0
+audio.play()
 const immagine = new Image();
-immagine.src = "napoli.png";
+immagine.src = "napoli.png"; // immagine iniziale
+
+const cambioImg = document.getElementById("sceltaPersonaggio");
+
+cambioImg.addEventListener("change", function() {
+  immagine.src = this.value; // cambia personaggio
+});
 
 function napoli() {
+
+  if (gameOver) {
+    ctx.fillStyle = "red";
+    ctx.font = "50px Arial";
+    ctx.fillText("GAME OVER", canvas.width / 2 - 150, canvas.height / 2);
+    return; // Ferma il gioco
+  }
 
   // Movimenti del cubo
   if (keys["ArrowRight"]) x += 5;
@@ -69,7 +111,7 @@ function napoli() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Disegno immagine
-ctx.drawImage(immagine, x, y, size, size);
+  ctx.drawImage(immagine, x, y, size, size);
 
 
   // Per ogni proiettile che si spara, 
@@ -85,6 +127,58 @@ ctx.drawImage(immagine, x, y, size, size);
       proiettili[i].height
     );
   }
+
+  for (let i = 0; i < nemici.length; i++) {
+
+    nemici[i].y += nemici[i].speed;
+
+    ctx.fillStyle = "red";
+    ctx.fillRect(
+      nemici[i].x,
+      nemici[i].y,
+      nemici[i].width,
+      nemici[i].height,
+      ctx.drawImage(immagine, x, y, size, size)
+
+    );
+
+
+// Collisione player - nemici
+for (let nemico of nemici) {
+  if (
+    x < nemico.x + nemico.width &&
+    x + size > nemico.x &&
+    y < nemico.y + nemico.height &&
+    y + size > nemico.y
+  ) {
+    gameOver = true;
+  }
+}
+
+// Collisione proiettili - nemici
+for (let i = proiettili.length - 1; i >= 0; i--) {
+  for (let j = nemici.length - 1; j >= 0; j--) {
+
+    let p = proiettili[i];
+    let n = nemici[j];
+
+    if (
+      p.x < n.x + n.width &&
+      p.x + p.width > n.x &&
+      p.y < n.y + n.height &&
+      p.y + p.height > n.y
+    ) {
+      nemici.splice(j, 1);
+      proiettili.splice(i, 1);
+      punteggio++;
+      break;
+    }
+  }
+}
+
+  ctx.fillStyle = "black";
+  ctx.font = "20px Arial";
+  ctx.fillText("Punteggio: " + punteggio, 20, 30);
 
   requestAnimationFrame(napoli);
 }

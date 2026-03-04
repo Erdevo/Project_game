@@ -143,38 +143,33 @@ function napoli() {
     );
 
 
-// Collisione player - nemici
-for (let nemico of nemici) {
-  if (
-    x < nemico.x + nemico.width &&
-    x + size > nemico.x &&
-    y < nemico.y + nemico.height &&
-    y + size > nemico.y
-  ) {
-    gameOver = true;
-  }
-}
-
-// Collisione proiettili - nemici
-for (let i = proiettili.length - 1; i >= 0; i--) {
-  for (let j = nemici.length - 1; j >= 0; j--) {
-
-    let p = proiettili[i];
-    let n = nemici[j];
-
     if (
-      p.x < n.x + n.width &&
-      p.x + p.width > n.x &&
-      p.y < n.y + n.height &&
-      p.y + p.height > n.y
+      x < nemici[i].x + nemici[i].width &&     //controllo posizione player e nemici
+      x + size > nemici[i].x &&
+      y < nemici[i].y + nemici[i].height &&
+      y + size > nemici[i].y
     ) {
-      nemici.splice(j, 1);
-      proiettili.splice(i, 1);
-      punteggio++;
-      break;
+      gameOver = true;
     }
   }
-}
+
+  for (let i = 0; i < proiettili.length; i++) {
+    for (let j = 0; j < nemici.length; j++) {
+
+      if (
+        proiettili[i].x < nemici[j].x + nemici[j].width &&
+        proiettili[i].x + proiettili[i].width > nemici[j].x &&
+        proiettili[i].y < nemici[j].y + nemici[j].height &&
+        proiettili[i].y + proiettili[i].height > nemici[j].y
+      ) {
+        nemici.splice(j, 1);         //instances changes the contents of an array by removing or replacing existing elements and adding new elements 
+        proiettili.splice(i, 1);
+        punteggio += 1;
+        break;
+      }
+    }
+  }
+
 
   ctx.fillStyle = "black";
   ctx.font = "20px Arial";

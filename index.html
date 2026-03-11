@@ -17,31 +17,37 @@
   <option value="mario.png">Mario</option>
   <option value="ronaldo.png">Ronaldo</option>
   <option value="azzurra.png">Azzurra</option>
+  <option value="paolo.png">Paolo Ruffini</option>
+  <option value="damiano.png">Damiano</option>
+  <option value=""></option>
+  <option value=""></option>
+  <option value=""></option>
 </select>
+<input type="button" id="scegli" value="SCEGLI">
 
 <script>
 const canvas = document.getElementById("canvas");
+const scegli = document.getElementById("scegli");
 const ctx = canvas.getContext("2d");
+const audio = new Audio("nugget.mp3");
 
-let x = 100;
-let y = 100;
-let size = 100; // Misura immagine
+
+let x = 400;
+let y = 400;
+let size = 75;
 let keys = {};
 let proiettili = [];
-let nemici = []; // Array nemici
+let nemici = [];
 let punteggio = 0;
 let gameOver = false;
 
-
 document.addEventListener("keydown", function(aura) {
+  
   keys[aura.key] = true;
 
-  
   if (aura.key === " ") {
-    // Aggiungiamo un nuovo proiettile nell'array
     proiettili.push({
-      // x del cubo + metà della sua grandezza
-      x: x + size / 2, //proiettile parte del centro (dio *)
+      x: x + size / 2,
       y: y,
       width: 10,
       height: 20,
@@ -50,78 +56,64 @@ document.addEventListener("keydown", function(aura) {
   }
 });
 
-
 document.addEventListener("keyup", function(aura) {
   keys[aura.key] = false;
 });
 
-function limiti() {               // Cosi non esce dal canvas
+function limiti() {
   if (x < 0) x = 0;
   if (y < 0) y = 0;
   if (x > canvas.width - size) x = canvas.width - size;
   if (y > canvas.height - size) y = canvas.height - size;
 }
 
-
-
 function creaNemico() {
   nemici.push({
-    x: Math.random() * (canvas.width - 60),
-    y: -100, // parte da fuori lo schermo
+    x: Math.random() * (canvas.width - 40),
+    y: -100,
     width: 60,
     height: 60,   
-    speed: 1 + Math.random() * 2
+    speed: 1 + Math.random() * 3
   });
 }
 
-// Ogni secondo crea un nemico
-setInterval(creaNemico, 1000);
+setInterval(creaNemico, 1200);
 
-
-const audio = new Audio("");
-audio.pause()
-audio.currentTime = 0
-audio.play()
 const immagine = new Image();
-immagine.src = "napoli.png"; // immagine iniziale
+immagine.src = "napoli.png";
 
 const cambioImg = document.getElementById("sceltaPersonaggio");
 
 cambioImg.addEventListener("change", function() {
-  immagine.src = this.value; // cambia personaggio
+  immagine.src = this.value;
 });
 
 function napoli() {
 
   if (gameOver) {
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "yellow";
     ctx.font = "50px Arial";
-    ctx.fillText("GAME OVER", canvas.width / 2 - 150, canvas.height / 2);
-    return; // Ferma il gioco
+    ctx.fillText("HAI PERSO", canvas.width / 2 - 140 , canvas.height / 2);
+    return;
   }
 
-  // Movimenti del cubo
-  if (keys["ArrowRight"]) x += 5;
-  if (keys["ArrowLeft"]) x -= 5;
-  if (keys["ArrowUp"]) y -= 5;
-  if (keys["ArrowDown"]) y += 5;
+  if (keys["ArrowRight"]) x += 7;
+  if (keys["ArrowLeft"]) x -= 7;
+  if (keys["ArrowUp"]) y -= 7;
+  if (keys["ArrowDown"]) y += 7;
 
   limiti();
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Disegno immagine
   ctx.drawImage(immagine, x, y, size, size);
 
-
-  // Per ogni proiettile che si spara, 
-  // si muoveeee il proiettile verso l’alto di tanti pixel quanti sono nella sua proprietà speed
   for (let i = 0; i < proiettili.length; i++) { 
     proiettili[i].y -= proiettili[i].speed;
 
     ctx.fillStyle = "black";
     ctx.fillRect(
-      proiettili[i].x,      // Misure proiettile 
+      proiettili[i].x,
       proiettili[i].y,
       proiettili[i].width,
       proiettili[i].height
@@ -132,19 +124,16 @@ function napoli() {
 
     nemici[i].y += nemici[i].speed;
 
-    ctx.fillStyle = "red";
+    ctx.fillStyle = "purple";
     ctx.fillRect(
       nemici[i].x,
       nemici[i].y,
       nemici[i].width,
-      nemici[i].height,
-      ctx.drawImage(immagine, x, y, size, size)
-
+      nemici[i].height
     );
 
-
     if (
-      x < nemici[i].x + nemici[i].width &&     //controllo posizione player e nemici
+      x < nemici[i].x + nemici[i].width &&
       x + size > nemici[i].x &&
       y < nemici[i].y + nemici[i].height &&
       y + size > nemici[i].y
@@ -155,21 +144,19 @@ function napoli() {
 
   for (let i = 0; i < proiettili.length; i++) {
     for (let j = 0; j < nemici.length; j++) {
-
       if (
         proiettili[i].x < nemici[j].x + nemici[j].width &&
         proiettili[i].x + proiettili[i].width > nemici[j].x &&
         proiettili[i].y < nemici[j].y + nemici[j].height &&
         proiettili[i].y + proiettili[i].height > nemici[j].y
       ) {
-        nemici.splice(j, 1);         //instances changes the contents of an array by removing or replacing existing elements and adding new elements 
+        nemici.splice(j, 1);
         proiettili.splice(i, 1);
         punteggio += 1;
         break;
       }
     }
   }
-
 
   ctx.fillStyle = "black";
   ctx.font = "20px Arial";
@@ -178,7 +165,11 @@ function napoli() {
   requestAnimationFrame(napoli);
 }
 
-napoli();
+scegli.addEventListener("click", function(){
+  audio.play();
+  napoli();
+});
+
 </script>
 
 </body>

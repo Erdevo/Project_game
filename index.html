@@ -7,6 +7,7 @@
 <body>
 <link rel="stylesheet" href="style.css">
 
+
 <canvas id="canvas" width="950" height="550">
 <div class="fortezza"></div>
 </canvas>
@@ -17,20 +18,12 @@
   <option value="mario.png">Mario</option>
   <option value="ronaldo.png">Ronaldo</option>
   <option value="azzurra.png">Azzurra</option>
-  <option value="paolo.png">Paolo Ruffini</option>
-  <option value="damiano.png">Damiano</option>
-  <option value=""></option>
-  <option value=""></option>
-  <option value=""></option>
 </select>
-<input type="button" id="scegli" value="SCEGLI">
 
 <script>
 const canvas = document.getElementById("canvas");
 const scegli = document.getElementById("scegli");
 const ctx = canvas.getContext("2d");
-const audio = new Audio("nugget.mp3");
-
 
 let x = 400;
 let y = 400;
@@ -41,10 +34,12 @@ let nemici = [];
 let punteggio = 0;
 let gameOver = false;
 
+
 document.addEventListener("keydown", function(aura) {
   
   keys[aura.key] = true;
 
+  
   if (aura.key === " ") {
     proiettili.push({
       x: x + size / 2,
@@ -56,9 +51,11 @@ document.addEventListener("keydown", function(aura) {
   }
 });
 
+
 document.addEventListener("keyup", function(aura) {
   keys[aura.key] = false;
 });
+
 
 function limiti() {
   if (x < 0) x = 0;
@@ -67,28 +64,38 @@ function limiti() {
   if (y > canvas.height - size) y = canvas.height - size;
 }
 
+
+
 function creaNemico() {
   nemici.push({
     x: Math.random() * (canvas.width - 40),
     y: -100,
     width: 60,
     height: 60,   
-    speed: 1 + Math.random() * 3
+    speed: 1 + Math.random() * 2
   });
 }
 
+
 setInterval(creaNemico, 1200);
 
+const audio = new Audio("");
+audio.pause()
+audio.currentTime = 0
+audio.play()
 const immagine = new Image();
-immagine.src = "napoli.png";
+immagine.src = "napoli.png"; // immagine iniziale
 
 const cambioImg = document.getElementById("sceltaPersonaggio");
+
 
 cambioImg.addEventListener("change", function() {
   immagine.src = this.value;
 });
 
+
 function napoli() {
+
 
   if (gameOver) {
     ctx.fillStyle = "yellow";
@@ -97,40 +104,53 @@ function napoli() {
     return;
   }
 
-  if (keys["ArrowRight"]) x += 7;
-  if (keys["ArrowLeft"]) x -= 7;
-  if (keys["ArrowUp"]) y -= 7;
-  if (keys["ArrowDown"]) y += 7;
+
+  // Movimenti del cubo
+  if (keys["ArrowRight"]) x += 5;
+  if (keys["ArrowLeft"]) x -= 5;
+  if (keys["ArrowUp"]) y -= 5;
+  if (keys["ArrowDown"]) y += 5;
 
   limiti();
 
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
 
   ctx.drawImage(immagine, x, y, size, size);
 
+
+  // Per ogni proiettile che si spara, 
+  // si muoveeee il proiettile verso l’alto di tanti pixel quanti sono nella sua proprietà speed
   for (let i = 0; i < proiettili.length; i++) { 
     proiettili[i].y -= proiettili[i].speed;
 
+
     ctx.fillStyle = "black";
     ctx.fillRect(
-      proiettili[i].x,
+      proiettili[i].x,      // Misure proiettile 
       proiettili[i].y,
       proiettili[i].width,
       proiettili[i].height
     );
   }
 
+
   for (let i = 0; i < nemici.length; i++) {
+
 
     nemici[i].y += nemici[i].speed;
 
-    ctx.fillStyle = "purple";
+    ctx.fillStyle = "red";
     ctx.fillRect(
       nemici[i].x,
       nemici[i].y,
       nemici[i].width,
-      nemici[i].height
+      nemici[i].height,
+      ctx.drawImage(immagine, x, y, size, size)
+
     );
+
 
     if (
       x < nemici[i].x + nemici[i].width &&
@@ -142,15 +162,17 @@ function napoli() {
     }
   }
 
+
   for (let i = 0; i < proiettili.length; i++) {
     for (let j = 0; j < nemici.length; j++) {
+
       if (
         proiettili[i].x < nemici[j].x + nemici[j].width &&
         proiettili[i].x + proiettili[i].width > nemici[j].x &&
         proiettili[i].y < nemici[j].y + nemici[j].height &&
         proiettili[i].y + proiettili[i].height > nemici[j].y
       ) {
-        nemici.splice(j, 1);
+        nemici.splice(j, 1);         //instances changes the contents of an array by removing or replacing existing elements and adding new elements 
         proiettili.splice(i, 1);
         punteggio += 1;
         break;
@@ -158,12 +180,15 @@ function napoli() {
     }
   }
 
+
   ctx.fillStyle = "black";
   ctx.font = "20px Arial";
   ctx.fillText("Punteggio: " + punteggio, 20, 30);
 
+
   requestAnimationFrame(napoli);
 }
+
 
 scegli.addEventListener("click", function(){
   audio.play();
@@ -171,6 +196,7 @@ scegli.addEventListener("click", function(){
 });
 
 </script>
+
 
 </body>
 </html>

@@ -7,21 +7,28 @@
 <body>
 <link rel="stylesheet" href="style.css">
 
+
 <canvas id="canvas" width="950" height="550">
 <div class="fortezza"></div>
 </canvas>
+<div class="player">
+  <h4 id="player">Scegli il tuo peronaggio</h4>
+  <div class="sceltaPersonaggio">
+    <select id="sceltaPersonaggio">
+      <option value="napoli.png" >Pocoyo</option>
+      <option value="mario.png">Mario</option>
+      <option value="ronaldo.png">Ronaldo</option>
+      <option value="azzurra.png">Azzurra</option>
+    </select>
+  </div>
+</div>
 
-<h4>Scegli il tuo peronaggio</h4>
-<select id="sceltaPersonaggio">
-  <option value="napoli.png">Pocoyo</option>
-  <option value="mario.png">Mario</option>
-  <option value="ronaldo.png">Ronaldo</option>
-  <option value="azzurra.png">Azzurra</option>
-</select>
+
 
 <script>
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+
 
 let x = 100;
 let y = 100;
@@ -33,10 +40,13 @@ let punteggio = 0;
 let gameOver = false;
 
 
+
+
 document.addEventListener("keydown", function(aura) {
   keys[aura.key] = true;
 
-  
+
+ 
   if (aura.key === " ") {
     // Aggiungiamo un nuovo proiettile nell'array
     proiettili.push({
@@ -51,9 +61,12 @@ document.addEventListener("keydown", function(aura) {
 });
 
 
+
+
 document.addEventListener("keyup", function(aura) {
   keys[aura.key] = false;
 });
+
 
 function limiti() {               // Cosi non esce dal canvas
   if (x < 0) x = 0;
@@ -64,34 +77,42 @@ function limiti() {               // Cosi non esce dal canvas
 
 
 
+
+
+
 function creaNemico() {
   nemici.push({
     x: Math.random() * (canvas.width - 60),
     y: -100, // parte da fuori lo schermo
     width: 60,
-    height: 60,   
+    height: 60,  
     speed: 1 + Math.random() * 2
   });
 }
+
 
 // Ogni secondo crea un nemico
 setInterval(creaNemico, 1000);
 
 
-const audio = new Audio("");
-audio.pause()
-audio.currentTime = 0
-audio.play()
+
+
+ 
 const immagine = new Image();
-immagine.src = "napoli.png"; // immagine iniziale
+immagine.src = "napoli.png"; // immagine iniziale 
+const nemico = new Image();
+nemico.src = "jeffrey-epstein.png"; 
 
 const cambioImg = document.getElementById("sceltaPersonaggio");
+
 
 cambioImg.addEventListener("change", function() {
   immagine.src = this.value; // cambia personaggio
 });
 
+
 function napoli() {
+
 
   if (gameOver) {
     ctx.fillStyle = "red";
@@ -100,47 +121,50 @@ function napoli() {
     return; // Ferma il gioco
   }
 
+
   // Movimenti del cubo
   if (keys["ArrowRight"]) x += 5;
   if (keys["ArrowLeft"]) x -= 5;
   if (keys["ArrowUp"]) y -= 5;
   if (keys["ArrowDown"]) y += 5;
 
+
   limiti();
 
+
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
 
   // Disegno immagine
   ctx.drawImage(immagine, x, y, size, size);
 
 
-  // Per ogni proiettile che si spara, 
+
+
+  // Per ogni proiettile che si spara,
   // si muoveeee il proiettile verso l’alto di tanti pixel quanti sono nella sua proprietà speed
-  for (let i = 0; i < proiettili.length; i++) { 
+  for (let i = 0; i < proiettili.length; i++) {
     proiettili[i].y -= proiettili[i].speed;
+
 
     ctx.fillStyle = "black";
     ctx.fillRect(
-      proiettili[i].x,      // Misure proiettile 
+      proiettili[i].x,      // Misure proiettile
       proiettili[i].y,
       proiettili[i].width,
       proiettili[i].height
     );
   }
 
+
   for (let i = 0; i < nemici.length; i++) {
+
 
     nemici[i].y += nemici[i].speed;
 
-    ctx.fillStyle = "red";
-    ctx.fillRect(
-      nemici[i].x,
-      nemici[i].y,
-      nemici[i].width,
-      nemici[i].height,
-      ctx.drawImage(immagine, x, y, size, size)
 
-    );
+    ctx.drawImage(nemico, nemici[i].x, nemici[i].y, nemici[i].width, nemici[i].height)
+
 
 
     if (
@@ -153,8 +177,10 @@ function napoli() {
     }
   }
 
+
   for (let i = 0; i < proiettili.length; i++) {
     for (let j = 0; j < nemici.length; j++) {
+
 
       if (
         proiettili[i].x < nemici[j].x + nemici[j].width &&
@@ -162,7 +188,7 @@ function napoli() {
         proiettili[i].y < nemici[j].y + nemici[j].height &&
         proiettili[i].y + proiettili[i].height > nemici[j].y
       ) {
-        nemici.splice(j, 1);         //instances changes the contents of an array by removing or replacing existing elements and adding new elements 
+        nemici.splice(j, 1);         //instances changes the contents of an array by removing or replacing existing elements and adding new elements
         proiettili.splice(i, 1);
         punteggio += 1;
         break;
@@ -171,15 +197,20 @@ function napoli() {
   }
 
 
+
+
   ctx.fillStyle = "black";
   ctx.font = "20px Arial";
   ctx.fillText("Punteggio: " + punteggio, 20, 30);
 
+
   requestAnimationFrame(napoli);
 }
 
+
 napoli();
 </script>
+
 
 </body>
 </html>

@@ -124,13 +124,12 @@ function napoli() {
     ctx.fillText("HAI PERSO", canvas.width / 2 - 140 , canvas.height / 2);
     return;
   }
-
   if (punteggio >= 50) {
     win = true;
   }
   // win
   if (win) {
-    ctx.fillStyle = "green";
+    ctx.fillStyle = "yellow";
     ctx.font = "50px Arial";
     ctx.fillText("HAI VINTO!", canvas.width / 2 - 140 , canvas.height / 2);
     return;
@@ -172,8 +171,8 @@ function napoli() {
 
     nemici[i].y += nemici[i].speed;
 
-    ctx.fillStyle = "purple";
-    ctx.fillRect(
+    ctx.drawImage(
+      nemico,
       nemici[i].x,
       nemici[i].y,
       nemici[i].width,
@@ -209,11 +208,6 @@ function napoli() {
 
         punteggio++;
 
-        // vittoria a 100 punti
-        if (punteggio >= 100) {
-          win = true;
-        }
-
         break;
       }
     }
@@ -237,6 +231,7 @@ scegli.addEventListener("click", function(){
 
   audio.play(); // musica
   napoli();     // avvia il gioco
+  scegli.blur();
   canvas.focus();
 
 });

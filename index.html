@@ -3,15 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <title>Difendi la torre di Cerrano</title>
-</head>
-<body>
 <link rel="stylesheet" href="style.css">
+</head>
 
-<canvas id="canvas" width="950" height="550">
-<div class="fortezza"></div>
-</canvas>
+<body>
 
-<h4>Scegli il tuo peronaggio</h4>
+<canvas id="canvas" width="950" height="550"></canvas>
+
+<h4>Scegli il tuo personaggio</h4>
 <select id="sceltaPersonaggio">
   <option value="napoli.png">Pocoyo</option>
   <option value="mario.png">Mario</option>
@@ -19,33 +18,46 @@
   <option value="azzurra.png">Azzurra</option>
   <option value="paolo.png">Paolo Ruffini</option>
   <option value="damiano.png">Damiano</option>
-  <option value=""></option>
-  <option value=""></option>
-  <option value=""></option>
+  <option value="aura.png">Aura</option>
+  <option value="nig.png">Nero</option>
 </select>
+
 <input type="button" id="scegli" value="SCEGLI">
 
 <script>
+
 const canvas = document.getElementById("canvas");
-const scegli = document.getElementById("scegli");
 const ctx = canvas.getContext("2d");
+
+// bottone per iniziare
+const scegli = document.getElementById("scegli");
+
+// suono del gioco
 const audio = new Audio("nugget.mp3");
 
-
+// posizione iniziale del giocatore
 let x = 400;
 let y = 400;
 let size = 75;
+
+// oggetti del gioco
 let keys = {};
 let proiettili = [];
 let nemici = [];
+
+// punteggio
 let punteggio = 0;
+
+// stato del gioco
 let gameOver = false;
+let win = false;
 
-document.addEventListener("keydown", function(aura) {
-  
-  keys[aura.key] = true;
+document.addEventListener("keydown", function(event) {
 
-  if (aura.key === " ") {
+  keys[event.key] = true;
+
+  // sparo con barra spaziatrice
+  if (event.key === " ") {
     proiettili.push({
       x: x + size / 2,
       y: y,
@@ -56,47 +68,75 @@ document.addEventListener("keydown", function(aura) {
   }
 });
 
-document.addEventListener("keyup", function(aura) {
-  keys[aura.key] = false;
+document.addEventListener("keyup", function(event) {
+  keys[event.key] = false;
 });
 
+
+//limiti
+
 function limiti() {
+
   if (x < 0) x = 0;
   if (y < 0) y = 0;
   if (x > canvas.width - size) x = canvas.width - size;
   if (y > canvas.height - size) y = canvas.height - size;
+
 }
 
+
+//crea nemici
+
 function creaNemico() {
+
   nemici.push({
     x: Math.random() * (canvas.width - 40),
     y: -100,
     width: 60,
-    height: 60,   
+    height: 60,
     speed: 1 + Math.random() * 3
   });
+
 }
 
 setInterval(creaNemico, 1200);
 
 const immagine = new Image();
 immagine.src = "napoli.png";
+const nemico = new Image();
+nemico.src = "jeffrey-epstein.png"; 
 
 const cambioImg = document.getElementById("sceltaPersonaggio");
 
+// cambio personaggio
 cambioImg.addEventListener("change", function() {
   immagine.src = this.value;
 });
 
+
+
 function napoli() {
 
+  //lose
   if (gameOver) {
-    ctx.fillStyle = "yellow";
+    ctx.fillStyle = "red";
     ctx.font = "50px Arial";
     ctx.fillText("HAI PERSO", canvas.width / 2 - 140 , canvas.height / 2);
     return;
   }
 
+  if (punteggio >= 50) {
+    win = true;
+  }
+  // win
+  if (win) {
+    ctx.fillStyle = "green";
+    ctx.font = "50px Arial";
+    ctx.fillText("HAI VINTO!", canvas.width / 2 - 140 , canvas.height / 2);
+    return;
+  }
+
+  // movimento del personaggio
   if (keys["ArrowRight"]) x += 7;
   if (keys["ArrowLeft"]) x -= 7;
   if (keys["ArrowUp"]) y -= 7;
@@ -106,9 +146,14 @@ function napoli() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // disegna il personaggio
   ctx.drawImage(immagine, x, y, size, size);
 
-  for (let i = 0; i < proiettili.length; i++) { 
+
+  //proiettili 
+
+  for (let i = 0; i < proiettili.length; i++) {
+
     proiettili[i].y -= proiettili[i].speed;
 
     ctx.fillStyle = "black";
@@ -119,6 +164,9 @@ function napoli() {
       proiettili[i].height
     );
   }
+
+
+  // nemici 
 
   for (let i = 0; i < nemici.length; i++) {
 
@@ -132,6 +180,7 @@ function napoli() {
       nemici[i].height
     );
 
+    // collisione con il giocatore
     if (
       x < nemici[i].x + nemici[i].width &&
       x + size > nemici[i].x &&
@@ -142,32 +191,54 @@ function napoli() {
     }
   }
 
+
+  // collisioni 
+
   for (let i = 0; i < proiettili.length; i++) {
     for (let j = 0; j < nemici.length; j++) {
+
       if (
         proiettili[i].x < nemici[j].x + nemici[j].width &&
         proiettili[i].x + proiettili[i].width > nemici[j].x &&
         proiettili[i].y < nemici[j].y + nemici[j].height &&
         proiettili[i].y + proiettili[i].height > nemici[j].y
       ) {
+
         nemici.splice(j, 1);
         proiettili.splice(i, 1);
-        punteggio += 1;
+
+        punteggio++;
+
+        // vittoria a 100 punti
+        if (punteggio >= 100) {
+          win = true;
+        }
+
         break;
       }
     }
   }
+
+
+  // PUNTEGGIO
 
   ctx.fillStyle = "black";
   ctx.font = "20px Arial";
   ctx.fillText("Punteggio: " + punteggio, 20, 30);
 
   requestAnimationFrame(napoli);
+
 }
 
+
+// avvio gioco
+
 scegli.addEventListener("click", function(){
-  audio.play();
-  napoli();
+
+  audio.play(); // musica
+  napoli();     // avvia il gioco
+  canvas.focus();
+
 });
 
 </script>
